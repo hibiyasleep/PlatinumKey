@@ -48,6 +48,7 @@ export default {
             socket: ref<WebSocket | null>(null),
             board: useBoardStore(),
             connection: useConnectStore(),
+            retryTimer: null as ReturnType<typeof setTimeout> | null,
 
             temp: [] as vote[],
             tempIdx: 0,
@@ -113,8 +114,14 @@ export default {
                         status: "disconnected"
                     })
                 }
-                setTimeout(() => this.connect(), 5000)
+                this.retryTimer = setTimeout(() => this.connect(), 3000)
             }
+        },
+
+        disconnect() {
+            this.retryTimer = null
+            this.socket.close()
+            this.socket = null
         },
 
         // controls
@@ -155,6 +162,9 @@ export default {
                 used: this.board.usedList
             })))
         })
+    },
+    unmounted() {
+        this.disconnect()
     }
 }
 </script>

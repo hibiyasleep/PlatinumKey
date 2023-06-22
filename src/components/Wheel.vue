@@ -38,6 +38,7 @@ export default {
             socket: ref<WebSocket | null>(null),
             log: useConnectStore(),
             retryCount: 0,
+            retryTimer: null as ReturnType<typeof setTimeout> | null,
 
             // wheel
             options: useWheelStore(),
@@ -176,9 +177,15 @@ export default {
                         status: 'disconnected'
                     })
                 }
-                setTimeout(() => this.connect(), this.retryCount > 0? 1000 : 10)
+                this.retryTimer = setTimeout(() => this.connect(), this.retryCount > 0? 1000 : 10)
                 this.retryCount++
             }
+        },
+
+        disconnect() {
+            this.retryTimer = null
+            this.socket.close()
+            this.socket = null
         },
 
         // saving
@@ -194,6 +201,9 @@ export default {
         this.spin()
         this.connect()
         window.addEventListener('beforeunload', this.saveWheel)
+    },
+    unmounted() {
+        this.disconnect()
     }
 }
 </script>
