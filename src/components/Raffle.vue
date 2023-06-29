@@ -178,6 +178,7 @@ export default {
 
             padding: 4px 8px;
             font-size: 20px;
+            font-weight: 600;
             line-height: 24px;
             overflow: hidden;
 
